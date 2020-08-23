@@ -70,7 +70,7 @@ void ejercicio_10()
 	Complejo c(0,1);
 	Complejo e(0);
 
-	std::cout<<"\n\n==Testeando funciones==\n\n";
+	std::cout<<"\n\n==Testeando funciones, LALA==\n\n";
 
 	std::cout<<"Suma: "<< a << " + "<< b<< "=" << a+b << "\n";
 	std::cout<<"Dife: "<< a << " - "<< b<< "=" << a-b << "\n";

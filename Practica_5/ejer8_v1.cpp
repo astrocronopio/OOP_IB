@@ -1,5 +1,5 @@
 /*
-Ejercicio 8 de la guia 5 de la materia de 
+Ejercicio 8 de la guia 4 de la materia de 
 OPP C++ del Instituto Balseiro, Septiembre 2020
 
 Escrito por Evelyn Coronel
@@ -11,6 +11,7 @@ Escrito por Evelyn Coronel
 
 class Manager
 {
+
 private:
     int valor;
     Manager();
@@ -23,7 +24,9 @@ public:
 Manager* Manager::get_Instance()
 {
     Manager* dummy ;
-    return dummy ;
+    //dummy->valor=2;
+    //std::cout<<dummy->valor;
+    return dummy ;//dummy;
 }
 
 /* ---------------------------------------- */

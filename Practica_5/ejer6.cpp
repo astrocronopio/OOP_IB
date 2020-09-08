@@ -5,8 +5,7 @@ OPP C++ del Instituto Balseiro, Septiembre 2020
 Escrito por Evelyn Coronel
 */
  
-#include <iostream>
-#include <vector> 
+#include <iostream> 
 
 class ejer6_A
 {

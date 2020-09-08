@@ -18,30 +18,18 @@ public:
     // 1 Construct
     ejer8_1(unsigned int size=1)
     : sz(size), array(new float(sz)) {};
-
-    /*
-    Si  defino la copia constructor, el 
-    compilador toma esto para la asignación */
     
     // 2 Copy Construct
-    
-    /*
     ejer8_1(const ejer8_1& dummy)
     : sz(dummy.sz), array(new float(sz))
     {
         std::copy(dummy.array, dummy.array + sz, array);
     }
-    */
 
     void print() const {std::cout<<"Direccion: "<<(void *) array<< std::endl;};
 
     // 3  Destruct
-    
-    /*Si pongo el delete array me tira un doble free error
-      porque no defino la copia constructor*/
-    
-    ~ejer8_1(){}//{delete [] array;};
-
+    ~ejer8_1(){delete [] array;};
 };
 
 
@@ -72,11 +60,14 @@ public:
     }
 
     ejer8_2 &operator=( ejer8_2  dummy)
-    { 
+    {   
+        // /ejer8_2 tmp;
         swap(*this, dummy);
+        //if (&dummy != this) {
+        //    *array = *dummy.array;}
         return *this;
     }
-    
+
     // 3  Destruct
     ~ejer8_2(){delete [] array;};
 };

@@ -26,7 +26,6 @@ public:
         if (objeto==nullptr) 
         {
             objeto = new Manager;
-        //return dummy ;
         }
         return objeto;
     };

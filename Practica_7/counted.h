@@ -13,9 +13,11 @@ public:
         std::cout<<"Creando Variable id: "<< id<< std::endl;
         };
     
+    
     ~Counted(){
         std::cout<<"Destruyendo Variable id: "<<id<< std::endl;
         };
+
 };
 
 int Counted::count = 0.0;

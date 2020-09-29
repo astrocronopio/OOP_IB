@@ -1,90 +1,29 @@
-/*
-Ejercicio 8 de la guia 7 de la materia de 
-OPP C++ del Instituto Balseiro, Septiembre 2020
-
-Escrito por Evelyn Coronel
-*/
-
 #include <iostream>
+#include <cassert> //Para el assert
+#include "ejer8.h"
 
 
-class ejer8
-{
-private:
-    int valor;
-    static unsigned int N;
-    static unsigned int n;
-public:
-    ejer8(){ 
-         if((n+1)>N){
-            std::cout<< "No pueden haber más de  "<<N<<" instancias en paralelo.\n";
-            exit;
-            }
-         else{
-             n++;
-             valor=n;
-             std::cout<< "creando "<<valor<<"/"<<N<<std::endl; 
-         }
-         };        
-         
-    ~ejer8(){};
-
-    void *operator new (size_t sz )
-    {   if((n+1)>N)
-        {
-            std::cout<< "No pueden haber más de  "<<N<<" instancias en paralelo.\n";
-            exit;
-        }
-        
-        else
-        {   n++;
-            return ::new ejer8();
-        }    
-    };
+int main()
+{   ejer8::heapInitializer();
     
-    void *operator new [](size_t sz )
-    {   if((n+1)>N)
-        {
-            std::cout<< "No pueden haber más de  "<<N<<" instancias en paralelo.\n";
-            exit;
-        }
-        
-        else
-        {   return ::new ejer8();
-        }    
-    };
+    // Arreglo de punteros a ejer8
+    int test=5;
+    ejer8 *prueba[test]; // pero solo tengo 4
 
-    void operator delete(void * p)
-    {
-        
-        delete p;
-    };
+    //ejer8 xinstance; //! Error porque ~ejer8 es privado
+    int k=0;
+    try {
+        for( k = 0; k < test; ++k ) 
+            prueba[k] = new ejer8;
 
-
-};
-
-
-
-unsigned int ejer8::n=0;
-unsigned int ejer8::N=4;
-
-
-
-int main(int argc, char const *argv[])
-{   
-    ejer8* vector[6] ;
-
-    for (size_t i = 0; i < 5; i++)
-    {
-        vector[i] = new ejer8;
+    } catch( const std::exception &e ) {
+        std::cout<<"Te pasate de instancias! "<<  e.what() << std::endl;
     }
-     
-    // ejer8 a1;
-    // ejer8 a2_1;
-    // a2_1.~ejer8();
 
-    // ejer8 a2_2;
-    // ejer8 a4;
-    // ejer8 a5;
+    std::cout << "\nAllocamos: " << k  <<" instancias"<< std::endl;
+
+    ejer8::destroy(prueba[3]);  //Pruebo en destruir
+    ejer8* pepe = new ejer8;    //Pruebo en instanciar
+
     return 0;
 }

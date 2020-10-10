@@ -6,7 +6,7 @@
             "label": "C/C++: g++ build active file",
             "command": "/usr/bin/g++",
             "args": [
-                "-g",
+                "-Wall -g -std=c++0x -pthread",
                 "${file}",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
@@ -23,6 +23,24 @@
             "type": "shell",
             "label": "C/C++: g++-9 build active file",
             "command": "/usr/bin/g++-9",
+            "args": [
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build"
+        },
+        {
+            "type": "shell",
+            "label": "C/C++: gcc build active file",
+            "command": "/usr/bin/gcc",
             "args": [
                 "-g",
                 "${file}",

@@ -33,7 +33,7 @@ public:
 
     Traveler &operator=( Traveler & dummy)// copy
     { 
-        name=dummy.name
+        name=dummy.name;
         return *this;
     };
 };

@@ -36,7 +36,7 @@ int main(int argc, char const *argv[])
 {   //Catching con clase heredada
     try
     {
-        throw error_1("error 1");
+        throw error_1();
     }
     catch(error_1 & e)
     {

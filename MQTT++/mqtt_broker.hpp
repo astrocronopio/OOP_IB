@@ -4,6 +4,7 @@
 #include <iostream>
 #include <deque>
 #include <forward_list>
+#include <thread>
 
 #include "mqtt.hpp"
 #include "mqtt_message.hpp"
@@ -17,6 +18,8 @@ private:
     std::deque<mqtt_message::message> message_deque;
     std::forward_list<mqtt_client::client*> clients_list;
     unsigned int deque_max=10;
+
+    long server_timeout=-1;
 
 public:
     broker(){};
@@ -37,18 +40,23 @@ public:
 
     void append_message(mqtt_message::message mess);
 
-    void connect_client(mqtt_client::client* cli);
+    short connect_client(mqtt_client::client* cli);
     void broadcast_message();
     void disconnect_client(mqtt_client::client* cli);
     void disconnect_client(short ID);
     void disconnect_client(std::string topic_cli);
+
+    void start_broadcasting();
+    void constant_broadcasting();
+    void timeout_broadcasting();
+
     
     
 
 };
 
 
-broker::append_message(mqtt_message::message mess)
+void broker::append_message(mqtt_message::message mess)
 {   
     if (message_deque.size() => deque_max):
         throw mqtt_errors::MQTT_ERR_DEQUE();
@@ -74,7 +82,7 @@ short broker::connect_client(mqtt_client::client* cli )
     
 }//append_mess
 
-broker::broadcast_message()
+void broker::broadcast_message()
 {   
     if (message_deque.size()==0) 
         throw mqtt_errors::MQTT_ERR_DEQUE_EMPTY();
@@ -105,6 +113,24 @@ broker::broadcast_message()
 }//broadcast
 
 
+
+void broker::start_broadcasting()
+{
+    if server_timeout==-1
+    {
+        constant_broadcasting();
+    }
+    else 
+    {
+        
+    }
+}
+
+void broker::constant_broadcasting()
+{
+
+}
+
 broker::disconnect_client(mqtt_client::client* cli)
 {
 
@@ -122,9 +148,6 @@ broker::disconnect_client(std::string topic_cli)
 
 
 }//disconnect cli
-
-
-
 
 
 }//namespace end

@@ -19,12 +19,13 @@
 #include "mqtt_broker.hpp"
 
 namespace mqtt_client{
-//virtualizemos las funciones que hopefully
-//van a ser utilizada a traves de todos los 
-//hijos
+
 
 class client_virtual
 {   
+    public:
+    client_virtual();
+    ~client_virtual();
     //Para no poder copiarse 
 	client_virtual(const client_virtual&) =delete;
 	client_virtual& operator=(const client_virtual&) =delete;
@@ -37,28 +38,56 @@ class client_virtual
     //mutable en vez de const
 	mutable  std::mutex lock_client;
 
+
 };
 
 
-class client
+class client : public client_virtual
 {
 public:
-    client( mqtt_broker::broker *host_init, short ID)
-            : _id(ID){host=host_init;};
 
-    client(mqtt_broker::broker * host_init, short ID, std::string topic="/empty/")
-            : _id(ID){host=host_init;};
+    client(){};
 
-    ~client(){};
+    client( mqtt_broker::broker *host_init)
+            {host=host_init;};
 
-    int connect(mqtt_broker::broker * host_init, short ID, std::string topic="/empty/");
-    int publish(message mess);
+//     client( mqtt_broker::broker *host_init, short ID)
+//             : _id(ID){host=host_init;};
+
+//     client(mqtt_broker::broker * host_init, short ID, std::string topic="/empty/")
+//             : _id(ID){host=host_init;};
+
+
+    void  connect(mqtt_broker::broker * host_init, std::string topic="/empty/")
+    {   
+        try
+        {
+            host = host_init;
+            client_topic.push_front(topic);
+            
+            if( host->connect_client(this) != mqtt::CONNACK) 
+                throw mqtt_errors::MQTT_ERR_CONNACK();
+
+            state=mqtt::CONNECTED;
+        }
+        catch(mqtt_errors::error & e)
+        {
+            std::cout << e.what() << '\n';
+        }
+    }; //connect
+
+
+    int publish(mqtt_message::message  mess)
+    {
+        host->append_message(mess);
+    };
+    int disconnect();
 
     bool is_connected() const{
         return state;
     };    
 
-    std::string get_topic() const{  
+    std::forward_list<std::string> get_topic() const{  
     return client_topic;};
 
     void _respuesta(mqtt_message::message* mess){};
@@ -69,31 +98,15 @@ private:
     unsigned int _id;
     std::string _name="";
     short _default_QoS=0;
-    Clock _retry_in = std::chrono::seconds(1);
+    // mqtt::Clock _retry_in = std::chrono::seconds(1);
     
-    //
+    
     mqtt_broker::broker* host;
-    std::string client_topic="";
+    std::forward_list<std::string> client_topic;
 
 };
 
 
-int client::connect(mqtt_broker::broker * host_init, std::string topic="/empty/")
-{   
-    try
-    {
-        host= host_init;
-        client_topic.assign(topic);
-        state=mqtt::CONNECTED;
-    }
-    catch(mqtt_errors::error & e)
-    {
-        std::cout << e.what() << '\n';
-    }
-
-    return 0;
-
-}
 }//namespacen
 
 #endif // CLIENT

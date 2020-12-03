@@ -40,9 +40,9 @@ class message
 private:
     std::string message_topic="";
     std::string message_cont="";
-    short QoS=NORMAL; //Por defecto QoS es normal.
+    short QoS=mqtt::NORMAL; //Por defecto QoS es normal.
     bool _published=false;
-    short _error= MQTT_MESS_N0_SUCCESS;
+    short _error= mqtt::MQTT_MESS_N0_SUCCESS;
 public:
     //Const default
     message(){};
@@ -50,7 +50,7 @@ public:
     //Const cambiando cosas
     message(std::string topic="", 
             std::string mes="", 
-            short qos=NORMAL)
+            short qos=mqtt::NORMAL)
             
             :message_topic(topic), 
             message_cont(mes), 
@@ -74,7 +74,7 @@ public:
 
     void _is_published(){
         //Acá  tengo que deslockear el proceso//
-        if (MQTT_MESS_SUCCESS ==_error)
+        if (mqtt::MQTT_MESS_SUCCESS ==_error)
             _published = true;
         
     }

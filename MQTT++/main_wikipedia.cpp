@@ -1,16 +1,12 @@
 #include <iostream>
 #include <stdlib.h>
 
-
-#include "mqtt.hpp"
-#include "mqtt_errors.hpp"
-#include "mqtt_message.hpp"
-#include "mqtt_broker.hpp"
 #include "mqtt_client.hpp"
 
 class client_wikipedia: public mqtt_client::client
 {
-
+    public:
+    client_wikipedia(){};
 };
 
 

@@ -1,4 +1,4 @@
-#if !defined(CLIENT)  
+#ifndef CLIENT
 #define CLIENT
 
 
@@ -15,7 +15,7 @@
 
 #include "mqtt.hpp"
 #include "mqtt_errors.hpp"
-#include "mqtt_message.hpp"
+
 #include "mqtt_broker.hpp"
 
 namespace mqtt_client{
@@ -24,30 +24,18 @@ namespace mqtt_client{
 class client_virtual
 {   
     public:
-    client_virtual();
-    ~client_virtual();
+    client_virtual(){};
+    ~client_virtual(){};
     //Para no poder copiarse 
 	client_virtual(const client_virtual&) =delete;
 	client_virtual& operator=(const client_virtual&) =delete;
-	
-
-	/** unique ptr pero para mutexes */
-	using unique_lock_mutex = std::unique_lock<std::mutex>;
-
-    //mutex lock
-    //mutable en vez de const
-	mutable  std::mutex lock_client;
-
-
 };
 
 
 class client : public client_virtual
 {
 public:
-
     client(){};
-
     client( mqtt_broker::broker *host_init)
             {host=host_init;};
 
@@ -60,31 +48,18 @@ public:
 
     void  connect(mqtt_broker::broker * host_init, std::string topic="/empty/")
     {   
-        try
-        {
-            host = host_init;
-            client_topic.push_front(topic);
-            
-            if( host->connect_client(this) != mqtt::CONNACK) 
-                throw mqtt_errors::MQTT_ERR_CONNACK();
 
-            state=mqtt::CONNECTED;
-        }
-        catch(mqtt_errors::error & e)
-        {
-            std::cout << e.what() << '\n';
-        }
+    }; //connect
+
+    void  disconnect()
+    {   
+
     }; //connect
 
 
-    int publish(mqtt_message::message  mess)
+    void publish(mqtt_message::message  mess)
     {
-        host->append_message(mess);
-    };
-    int disconnect();
-
-    bool is_connected() const{
-        return state;
+        
     };    
 
     std::forward_list<std::string> get_topic() const{  

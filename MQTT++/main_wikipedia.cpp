@@ -22,7 +22,7 @@ int main(int argc, char const *argv[])
 
         clienteB.connect(&servidor, topic);
         mqtt_message::message temperatura("25 C", topic);
-        clienteB.publish(temperatura);
+        clienteB.publish(temperatura, true);
 
         client_wikipedia clienteA;
         clienteA.connect(&servidor, topic);

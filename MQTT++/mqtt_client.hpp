@@ -36,8 +36,8 @@ class client : public client_virtual
 {
 public:
     client(){};
-    client( mqtt_broker::broker *host_init)
-            {host=host_init;};
+    // client( mqtt_broker::broker *host_init)
+    //         {host=host_init;};
 
 //     client( mqtt_broker::broker *host_init, short ID)
 //             : _id(ID){host=host_init;};
@@ -57,7 +57,7 @@ public:
     }; //connect
 
 
-    void publish(mqtt_message::message  mess)
+    void publish(mqtt_message::message  mess, bool retain=false)
     {
         
     };    
@@ -74,13 +74,10 @@ private:
     std::string _name="";
     short _default_QoS=0;
     // mqtt::Clock _retry_in = std::chrono::seconds(1);
-    
-    
-    mqtt_broker::broker* host;
+
     std::forward_list<std::string> client_topic;
 
 };
-
 
 }//namespacen
 

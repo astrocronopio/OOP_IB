@@ -41,7 +41,16 @@ class client_virtual
 	client_virtual& operator=(const client_virtual&) =delete;
 };
 
+/*
+El cliente solo puede estar conectado a un servidor
+al mismo tiempo.
+Tiene la opcion de hacer que sus mensajes siempre vayan
+al inicio de la cola de mensajes con  QoS=HIGH.
 
+La función client::reply() debe ser implementado por cada 
+tipo de cliente, ya  que cada uno va a tener un tipo de 
+respuesta distinta.
+*/
 class client : public client_virtual
 {
 public:
@@ -56,8 +65,9 @@ public:
     std::forward_list<std::string> get_topic() const{ return client_topic;};
 
     /*
-    Esto debe ser implementado por cada tipo de cliente
-    cada uno va a tener un tipo de respuesta
+    La función client::reply() debe ser implementado por cada 
+    tipo de cliente, ya  que cada uno va a tener un tipo de 
+    respuesta distinta.
     */
 
     virtual mqtt_message::message* reply(mqtt_message::message* mess)=0;
@@ -72,7 +82,6 @@ private:
     std::string name="";
     short default_QoS=0;
     std::forward_list<std::string> client_topic;
-
 };
 
 

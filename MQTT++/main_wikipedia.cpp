@@ -19,7 +19,7 @@ class client_wikipedia: public mqtt_client::client
         std::cout<<"La temperatura es "<<mess->get_payload()<<std::endl;
         return nullptr; //Podría devolver otro mensaje, pero no en este ejemplo
     };
-};
+}; 
 
 
 int main(int argc, char const *argv[])
@@ -28,7 +28,7 @@ int main(int argc, char const *argv[])
     try
     {    
         mqtt_broker::broker servidor;
-       servidor.start_broadcasting();
+        servidor.start_broadcasting();
 
         client_wikipedia clienteB;
         clienteB.set_name(" client B ");

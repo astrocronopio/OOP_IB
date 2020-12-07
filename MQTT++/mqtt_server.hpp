@@ -24,10 +24,31 @@ milliseconds ms1_2 {500};
 namespace mqtt_server
 {
 
+/*
+El publisher es un duo de mensaje y la direccion (ptr)
+del cliente que mando el mensaje
+*/
+struct publisher{
+    // void porque no quiero usar el ptr a cliente,
+    // si lo hago genero una dependencia circular
+    void * cli; 
+    mqtt_message::message * mess;
+};
+
+/*
+El servidor tiene el thread que lo corre como parte
+de sus variables privadas. 
+
+Tiene la opcion de agregar el timeout [server_timeout, 
+server::set_timeout()] (cuanto tiempo esta prendido) y 
+el intervalo entre mensajes[server_interval, server::
+set_interval()]. Ambas variables estan en milisegundos.
+*/
+
 class server
 {
 private:
-    std::deque<mqtt_message::message *> message_deque;
+    std::deque< publisher > message_deque;
     unsigned int deque_max=10;
     
     duration<double,std::milli> server_timeout = null;
@@ -50,10 +71,14 @@ public:
     
     server():server_thread(){};
     server(unsigned int i): deque_max(i){};
-    server(duration<double,std::milli> &rel_time): server_timeout(rel_time){};
+    server(duration<double,std::milli> &rel_time): 
+            server_timeout(rel_time){};
     
     void set_timeout(duration<double,std::milli> timeout_ms)
-                { server_timeout=timeout_ms;};
+            { server_timeout=timeout_ms;};
+
+    void set_interval(duration<double,std::milli> interval_ms)
+            { server_interval=interval_ms;};
 
     ~server(){  };
 
@@ -63,27 +88,39 @@ public:
     
     void print_deque_size(){std::cout<<get_deque_size()<<std::endl;}
 
-
-    mqtt_message::message* pop_message() 
+    /*
+    Esta funcion obtiene el mensaje top en la cola
+    */
+    publisher pop_message() 
     {
-        mqtt_message::message* mess = message_deque.front();
+        publisher mess = message_deque.front();
         message_deque.pop_front();
         return mess;
     }
 
-    mqtt_message::message* get_message();
+
+    publisher get_message();
     
-    void append_message(mqtt_message::message* mess);
+    //Es un mensaje para todos, entonces el cliente es nullptr
+    void append_message(mqtt_message::message* mess)
+    {
+        append_message_from(nullptr, mess);
+    };
 
+    /*
+    Esta funcion agrega el mensaje a la cola dependiendo de
+    el QoS con el que viene el mensaje.
+    */
+    void append_message_from(void* cli, mqtt_message::message* mess);
 
-    void broadcast_message();
+    virtual void broadcast_message(){};
     void start_broadcasting();
     void constant_broadcasting();
     void timeout_broadcasting();
 };
 
 
-void server::append_message(mqtt_message::message* mess)
+void server::append_message_from(void * cli, mqtt_message::message* mess)
 {   
     if (get_deque_size() >= deque_max)
         throw mqtt_errors::MQTT_ERR_DEQUE();
@@ -91,44 +128,39 @@ void server::append_message(mqtt_message::message* mess)
     else
     {
         if (mess->get_QoS()==mqtt::NORMAL)
-            message_deque.push_back(mess);
+            message_deque.push_back({cli, mess});
         
         else if (mess->get_QoS()==mqtt::HIGH)
-            message_deque.push_front(mess);
+            message_deque.push_front({cli, mess});
         
         else
             throw mqtt_errors::MQTT_ERR_QOS();
     }
 }//append
 
-mqtt_message::message* server::get_message()
+/*
+Esta funcion obtiene el mensaje top en la cola
+verifica que la cola no este vacia. Si lo esta 
+devuelve nullptr
+*/
+publisher server::get_message()
 {   
     std::cout<<get_deque_size()<<std::endl;
 
     if (get_deque_size()==0) 
         {   std::cout<<"Cola vacía.\n";
-            return nullptr;
+            return {nullptr, nullptr};
             }
             //throw mqtt_errors::MQTT_ERR_DEQUE_EMPTY();}
     else {   
-        return get_message();
+        return pop_message();
     }
 
 }//broadcast
 
 
-void server::broadcast_message()
-{
-    mqtt_message::message* mess = get_message();
-    if (mess != nullptr)
-    {
-        for (auto i : message_deque);
-    }
-}
-
 void server::start_broadcasting()
-{
-    if (server_timeout==null)
+{   if (server_timeout==null)
         {
             //server_thread = std::thread(&server::constant_broadcasting,this);
             // server_thread.detach();
@@ -138,18 +170,18 @@ void server::start_broadcasting()
     else
         {
             //server_thread = std::thread(&server::timeout_broadcasting,this);
-            server_thread.detach();
+            // server_thread.detach();
         }
         // timeout_broadcasting();
 }
 
 void server::constant_broadcasting()
-{   
+{    std::cout<<"bro000";
     // std::unique_lock<std::mutex> lock_broadcasting(server_mutex);
     while (stop_thread==false)
     {   
         // std::unique_lock<std::mutex> lock_broadcasting(server_mutex);
-        // std::cout<<"bro000";
+        
         // std::this_thread::sleep_for(server_interval);
         std::this_thread::sleep_for(server_interval);
         broadcast_message();

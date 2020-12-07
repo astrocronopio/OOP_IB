@@ -8,6 +8,8 @@
 
 #include <stdlib.h>
 #include <time.h>  
+
+
 #include <chrono>
 #include <thread>
 #include <mutex>
@@ -15,8 +17,7 @@
 
 #include "mqtt.hpp"
 #include "mqtt_errors.hpp"
-
-#include "mqtt_broker.hpp"
+#include "mqtt_server.hpp"
 
 namespace mqtt_client{
 
@@ -26,6 +27,15 @@ class client_virtual
     public:
     client_virtual(){};
     ~client_virtual(){};
+
+    virtual void subscribe(std::string topic) =0;
+    virtual void reply(mqtt_message::message* mess)=0;
+
+    virtual bool isConnected() const =0;
+    virtual void Connect() = 0;
+    virtual void Disconnect() =0;
+    
+    private:
     //Para no poder copiarse 
 	client_virtual(const client_virtual&) =delete;
 	client_virtual& operator=(const client_virtual&) =delete;
@@ -35,49 +45,31 @@ class client_virtual
 class client : public client_virtual
 {
 public:
-    client(){};
-    // client( mqtt_broker::broker *host_init)
-    //         {host=host_init;};
 
-//     client( mqtt_broker::broker *host_init, short ID)
-//             : _id(ID){host=host_init;};
+    client(){}; //Random ID, es malo esta forma porque no 
+                    // me aseguro que no haya
 
-//     client(mqtt_broker::broker * host_init, short ID, std::string topic="/empty/")
-//             : _id(ID){host=host_init;};
+    void set_id(unsigned int  ID){id=ID;};
+    unsigned int get_id() const {return id;};
 
+    void subscribe(std::string topic) {client_topic.push_front(topic);};
+    
+    std::forward_list<std::string> get_topic() const{ return client_topic;};
+    virtual void reply(mqtt_message::message* mess)=0;
 
-    void  connect(mqtt_broker::broker * host_init, std::string topic="/empty/")
-    {   
-
-    }; //connect
-
-    void  disconnect()
-    {   
-
-    }; //connect
-
-
-    void publish(mqtt_message::message  mess, bool retain=false)
-    {
-        
-    };    
-
-    std::forward_list<std::string> get_topic() const{  
-    return client_topic;};
-
-    void _respuesta(mqtt_message::message* mess){};
-
+    bool isConnected() const {return Connected;}
+    void Connect() { Connected=true;}
+    void Disconnect() { Connected=false;}
 
 private:
-    bool state=false;
-    unsigned int _id;
-    std::string _name="";
-    short _default_QoS=0;
-    // mqtt::Clock _retry_in = std::chrono::seconds(1);
-
+    bool Connected=false;
+    unsigned int id=0;
+    std::string name="";
+    short default_QoS=0;
     std::forward_list<std::string> client_topic;
 
 };
+
 
 }//namespacen
 

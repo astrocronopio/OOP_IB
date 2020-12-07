@@ -39,7 +39,8 @@ class message
 {
 private:
     std::string message_topic="";
-    std::string message_cont="";
+    std::string message_cont;
+
     short QoS=mqtt::NORMAL; //Por defecto QoS es normal.
     bool _published=false;
     short _error= mqtt::MQTT_MESS_N0_SUCCESS;
@@ -48,8 +49,8 @@ public:
     message(){};
 
     //Const cambiando cosas
-    message(std::string topic="", 
-            std::string mes="", 
+    message(std::string mes="", 
+            std::string topic="", 
             short qos=mqtt::NORMAL)
             
             :message_topic(topic), 

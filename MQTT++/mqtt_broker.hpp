@@ -2,8 +2,9 @@
 
 
 #include <iostream>
-#include <forward_list>
+#include <list>
 #include <thread>
+#include <string>
 
 #include <chrono>
 using namespace std::chrono;
@@ -13,40 +14,63 @@ using namespace std::chrono;
 
 namespace mqtt_broker{
 
-class broker
+// struct subscriber{
+//     mqtt_client::client * cli;
+//     unsigned int ID;
+// };
+
+
+class broker : public mqtt_server::server
 {
-    mqtt_broker::broker* host;
-    std::forward_list<mqtt_client::client> subscribers;
+    std::list<mqtt_client::client *> subscribers;
+    mqtt::id_generator ID_gen;
 public:
-    broker(/* args */){};
+    broker(){};
+    
+    void publish(mqtt_message::message* mess, bool retain);
+    void publish_from(mqtt_client::client * cli, mqtt_message::message* mess, bool retain);
 
-    broker(mqtt_broker::broker* host): host(host){};
-    ~broker(){};
+    void connect(mqtt_client::client * cli, std::string topic);
+    void disconnect(mqtt_client::client * cli);
 
-    void set_host(mqtt_broker::broker* host_init){
-        host = host_init;
-    }
-
-    void subscribe{mqtt_client}
-
-    void start_broadcasting();
-    void constant_broadcasting();
-    void timeout_broadcasting();
 };
 
+    void broker::publish(mqtt_message::message* mess, bool retain = false)
+    {
+        append_message(mess);
+    }
+
+    void broker::publish_from(mqtt_client::client * cli, mqtt_message::message* mess, bool retain = false)
+    {   
+        append_message(mess);
+    }
+
+    void broker::connect(mqtt_client::client * cli, std::string topic)
+    {
+        if (cli->isConnected()==true)
+        {
+            std::cout<<"El cliente "<< cli->get_id()<< "ya está conectado a un server";
+            return;
+        }
+        else
+        {   
+            cli->set_id(ID_gen.Random_ID());
+            cli->Connect();
+            cli->subscribe(topic);
+            subscribers.push_front(cli);
+        }
+
+    }
+
+    void broker::disconnect(mqtt_client::client * cli)
+    {   
+        cli->set_id(0);
+        cli->Disconnect();
+        subscribers.remove(cli);
+    }
 
 
 
-void broker::start_broadcasting()
-{
-
-}
-
-void broker::constant_broadcasting()
-{
-
-}
-
-}
+}//namespace
 
 #endif // !broker

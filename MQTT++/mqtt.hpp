@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 namespace mqtt{
 
@@ -36,6 +37,39 @@ const bool DISCONNECTED=false;
 const short NORMAL=0;
 const short HIGH=1;
 
+
+class id_generator{
+    private:
+    std::vector<unsigned int> used_ID;
+
+    public:
+    unsigned int Random_ID();
+    unsigned int Used_ID(unsigned int id);
+};
+
+
+unsigned int id_generator::Random_ID()
+{
+    srand (time(NULL));
+    unsigned int newID = rand()%RAND_MAX + 1; //Nunca va a ser cero
+    
+    for (auto i : used_ID)
+        if (newID == i)
+            newID = Random_ID(); //Es peligroso si 
+                                 // el array es muuy grande 
+    return newID;
+}
+
+
+unsigned int id_generator::Used_ID(unsigned int newID)
+{
+     for (auto i : used_ID)
+        if (newID == i)
+            {   std::cout<<"\n ID ya utilizado, generado uno random..\n";
+                newID = Random_ID();
+                } //Es peligroso si el array es muuy grande 
+    return newID;
+}
 
 }
 #endif // MQTT

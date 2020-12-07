@@ -10,17 +10,20 @@ class client_wikipedia: public mqtt_client::client
     
     public:
     client_wikipedia(){};
+
     void set_name(std::string n) {name.assign(n);}
 
-    void reply(mqtt_message::message* mess)
+    mqtt_message::message* reply(mqtt_message::message* mess)
     {
-        std::cout<<"Mensaje recibido por "<<name;
+        std::cout<<"Mensaje recibido por "<<name<<":\n";
+        std::cout<<"La temperatura es "<<mess->get_payload()<<std::endl;
+        return nullptr; //Podría devolver otro mensaje, pero no en este ejemplo
     };
 };
 
 
 int main(int argc, char const *argv[])
-{  
+{   
 
     try
     {    
@@ -33,8 +36,8 @@ int main(int argc, char const *argv[])
         std::string topic="/temperature/roof/";
 
         servidor.connect(&clienteB, topic);
-        mqtt_message::message temperatura("25 C", topic);
-        servidor.publish_from(&clienteB, &temperatura, true);
+        mqtt_message::message temperatura("25 C", topic, true);
+        servidor.publish_from(&clienteB, &temperatura);
 
         client_wikipedia clienteA;
         clienteA.set_name(" client A ");

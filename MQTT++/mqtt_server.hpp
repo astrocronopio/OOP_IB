@@ -64,18 +64,19 @@ public:
     void print_deque_size(){std::cout<<get_deque_size()<<std::endl;}
 
 
-    mqtt_message::message* get_message() 
+    mqtt_message::message* pop_message() 
     {
         mqtt_message::message* mess = message_deque.front();
         message_deque.pop_front();
         return mess;
     }
 
-
-
+    mqtt_message::message* get_message();
+    
     void append_message(mqtt_message::message* mess);
 
-    mqtt_message::message* broadcast_message();
+
+    void broadcast_message();
     void start_broadcasting();
     void constant_broadcasting();
     void timeout_broadcasting();
@@ -100,7 +101,7 @@ void server::append_message(mqtt_message::message* mess)
     }
 }//append
 
-mqtt_message::message* server::broadcast_message()
+mqtt_message::message* server::get_message()
 {   
     std::cout<<get_deque_size()<<std::endl;
 
@@ -115,6 +116,15 @@ mqtt_message::message* server::broadcast_message()
 
 }//broadcast
 
+
+void server::broadcast_message()
+{
+    mqtt_message::message* mess = get_message();
+    if (mess != nullptr)
+    {
+        for (auto i : message_deque);
+    }
+}
 
 void server::start_broadcasting()
 {
@@ -142,7 +152,6 @@ void server::constant_broadcasting()
         // std::cout<<"bro000";
         // std::this_thread::sleep_for(server_interval);
         std::this_thread::sleep_for(server_interval);
-        std::cout << "good morning" << std::endl;
         broadcast_message();
     }
     

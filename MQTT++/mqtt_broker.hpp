@@ -27,22 +27,46 @@ class broker : public mqtt_server::server
 public:
     broker(){};
     
-    void publish(mqtt_message::message* mess, bool retain);
-    void publish_from(mqtt_client::client * cli, mqtt_message::message* mess, bool retain);
+    void publish(mqtt_message::message* mess);
+    void publish_from(mqtt_client::client * cli, mqtt_message::message* mess);
 
     void connect(mqtt_client::client * cli, std::string topic);
     void disconnect(mqtt_client::client * cli);
 
+    void broadcast_message(mqtt_client::client * publisher);
+
 };
 
-    void broker::publish(mqtt_message::message* mess, bool retain = false)
+    void broker::publish(mqtt_message::message* mess)
     {
         append_message(mess);
     }
 
-    void broker::publish_from(mqtt_client::client * cli, mqtt_message::message* mess, bool retain = false)
+    void broker::publish_from(mqtt_client::client * cli, mqtt_message::message* mess)
     {   
         append_message(mess);
+    }
+
+    void broker::broadcast_message(mqtt_client::client * publisher = nullptr)
+    {   
+        bool flag = false;
+        mqtt_message::message* mess = pop_message();
+        mqtt_message::message* client_reply = nullptr;
+        
+        for (auto i : subscribers)
+        {   
+            if (i == publisher) continue; // no se puede mandar un mensaje a si mismo
+
+            if (mqtt_message::topic_match_sub(mess->get_topic(), i->get_topic()))
+                {  flag=true;
+
+                   client_reply = i->reply(mess);
+                   if (client_reply!=nullptr) 
+                        publish_from(i, client_reply);
+                }
+        }
+        if (flag==false && mess->is_retain())
+            append_message(mess);
     }
 
     void broker::connect(mqtt_client::client * cli, std::string topic)
@@ -68,8 +92,6 @@ public:
         cli->Disconnect();
         subscribers.remove(cli);
     }
-
-
 
 }//namespace
 

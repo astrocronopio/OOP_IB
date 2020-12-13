@@ -44,7 +44,7 @@ private:
     std::string message_topic="";
     std::string payload;
 
-    short QoS=mqtt::NORMAL; //Por defecto QoS es normal.
+    short Priority=mqtt::NORMAL; //Por defecto Priority es normal.
     bool published=false;
     bool retain=false;
     bool _published=false;
@@ -58,12 +58,12 @@ public:
     message(std::string mes="", 
             std::string topic="",
             bool retain_=false ,
-            short qos=mqtt::NORMAL
+            short priority=mqtt::NORMAL
             )
             
             :message_topic(topic), 
             payload(mes)
-            {QoS=qos; retain=retain_;};
+            {Priority=priority; retain=retain_;};
 
     //Copy-Const
     ~message(){};
@@ -74,6 +74,9 @@ public:
     std::string get_payload() const{  
         return payload;};
 
+    void set_payload(std::string pay) {  
+        payload.assign(pay);};
+
     bool is_retain() const{  
         return retain;};
     
@@ -81,19 +84,19 @@ public:
     void set_topic(std::string topic){
         message_topic.assign(topic);};
 
-    short get_QoS() const{ return QoS;}
-    void set_QoS(short qos){QoS=qos;};
+    short get_Priority() const{ return Priority;}
+    void set_Priority(short priority){Priority=priority;};
 
-    void _wait_publish(){
-        //Aca lockeo el proceso//
-    }
+    // void _wait_publish(){
+    //     //Aca lockeo el proceso//
+    // }
 
-    void _is_published(){
-        //Acá  tengo que deslockear el proceso//
-        if (mqtt::MQTT_MESS_SUCCESS ==_error)
-            _published = true;
+    // void _is_published(){
+    //     //Acá  tengo que deslockear el proceso//
+    //     if (mqtt::MQTT_MESS_SUCCESS ==_error)
+    //         _published = true;
         
-    }
+    // }
 };
 
 }

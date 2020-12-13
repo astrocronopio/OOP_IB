@@ -29,12 +29,18 @@ class client_virtual
     ~client_virtual(){};
 
     virtual void subscribe(std::string topic) =0;
-    virtual mqtt_message::message* reply(mqtt_message::message* mess)=0;
-
     virtual bool isConnected() const =0;
     virtual void Connect() = 0;
     virtual void Disconnect() =0;
     
+    /*
+    La función client::reply() debe ser implementado por cada 
+    tipo de cliente, ya  que cada uno va a tener un tipo de 
+    respuesta distinta.
+    */
+
+    virtual mqtt_message::message* reply(mqtt_message::message* mess)=0;
+
     private:
     //Para no poder copiarse 
 	client_virtual(const client_virtual&) =delete;
@@ -45,7 +51,7 @@ class client_virtual
 El cliente solo puede estar conectado a un servidor
 al mismo tiempo.
 Tiene la opcion de hacer que sus mensajes siempre vayan
-al inicio de la cola de mensajes con  QoS=HIGH.
+al inicio de la cola de mensajes con  Priority=HIGH.
 
 La función client::reply() debe ser implementado por cada 
 tipo de cliente, ya  que cada uno va a tener un tipo de 
@@ -60,27 +66,21 @@ public:
     void set_id(unsigned int  ID){id=ID;};
     unsigned int get_id() const {return id;};
 
+    void set_Priority(short priority){default_Priority=priority;};
+
     void subscribe(std::string topic) {client_topic.push_front(topic);};
     
     std::forward_list<std::string> get_topic() const{ return client_topic;};
 
-    /*
-    La función client::reply() debe ser implementado por cada 
-    tipo de cliente, ya  que cada uno va a tener un tipo de 
-    respuesta distinta.
-    */
-
-    virtual mqtt_message::message* reply(mqtt_message::message* mess)=0;
-
     bool isConnected() const {return Connected;}
-    void Connect() { Connected=true;}
-    void Disconnect() { Connected=false;}
+    void Connect() { Connected=mqtt::CONNECTED;}
+    void Disconnect() { Connected=mqtt::DISCONNECTED;}
 
 private:
-    bool Connected=false;
+    bool Connected=mqtt::DISCONNECTED;
     unsigned int id=0;
     std::string name="";
-    short default_QoS=0;
+    short default_Priority=mqtt::NORMAL;
     std::forward_list<std::string> client_topic;
 };
 

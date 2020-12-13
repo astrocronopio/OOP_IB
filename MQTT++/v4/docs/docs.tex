@@ -1,0 +1,90 @@
+\input{Preamblev2.sty}
+\begin{document}
+
+\title{MQTT++}
+\author{Evelyn~G.~Coronel}
+
+\affiliation{
+Programación Orientada a Objetos\\ Instituto Balseiro\\}
+
+\date[]{\lowercase{\today}} %%lw para lw, [] sin date
+
+\maketitle
+% \onecolumngrid
+
+\section{MQTT simplificado en \texttt{C++}}
+
+En este trabajo se basó en la implementación del protocolo de MQTT utilizando los temas de la materia. 
+
+
+\subsection{Librería \texttt{mqtt.hpp}}
+
+Esta  librería están almacenadas las variables reservadas para el protocolo, dentro del \texttt{namespace mqtt}. También se implementó una clase que asigna valores de identificación (ID) únicos a los clientes.
+
+\subsection{Librería \texttt{mqtt\_errors.hpp}}
+
+\subsection{Librería \texttt{mqtt\_message.hpp}}
+
+\subsection{Librería \texttt{mqtt\_client.hpp}}
+
+    En esta librería están implementadas las clases utilizada para instanciar objetos que se comporten con un cliente. La misma está dentro del \texttt{namespace mqtt\_client}.
+
+    \subsubsection{Clase \texttt{mqtt\_client::client\_virtual}}
+    En esta clase esta implementada de tal forma que la misma y sus hijos no puedan copiarse. También se declaran funciones virtuales puras para que luego van a ser implementadas en las clases hijas.
+
+    \subsubsection{Clase \texttt{mqtt\_client::client}}
+
+    Esta clase es heredada de la clase \verb|mqtt_client::client_virtual|. Se asigna un ID al azar, usando \verb|mqtt_client::get_id()| y \verb|mqtt_client::set_id(<unsigned int>)|  cuando se conecta al broker que transmite los mensajes
+
+    Un cliente puede estar conectado a un solo server ya que al conectarse/desconectarse la variable \verb|mqtt_client::Connected| cambia \verb|mqtt::CONNECTED| / \verb|mqtt::DISCONNECTED|. El estado del cliente se obtiene mediante la función \verb|mqtt_client::isConnected()|.
+
+    Un cliente puede estar suscrito a varios topics al mismo tiempo, la función \verb|mqtt_client::client::subscribe(<string>)|  agrega un nuevo topic a una lista miembro de la clase \verb|mqtt_client::client|, la función \verb|mqtt_client::client::get_topic()| devuelve dicha lista.
+
+    El cliente solo puede estar conectado a un servidor
+    al mismo tiempo. Tiene la opción de hacer que sus mensajes siempre vayan por defecto, al inicio de la cola de mensajes con  \verb|mqtt_client::set_Priority(mqtt::HIGH)|.
+
+    La función \verb|mqtt_client::client::reply()| debe ser implementada por cada tipo de cliente, ya  que cada uno va a tener una forma de responder distinta.
+
+
+\subsection{Librería \texttt{mqtt\_server.hpp}}
+
+\subsection{Librería \texttt{mqtt\_broker.hpp}}
+
+La librería esta con el \texttt{namespace mqtt\_broker}
+\subsubsection{Clase \texttt{mqtt\_broker}}
+Esta clase es una clase hija de \verb|mqtt\_server::server|
+Como atributos la clase tiene una lista con las direcciones de los clientes conectados al broker, un generador de IDs, además de un \verb|mutex| y un \verb|condition_variable| para manejar la lista de clientes y la cola de mensajes.
+
+Los métodos de esta clase incluyen a:
+
+\begin{itemize}
+    \item[-] \verb|sin_subs()|:
+    Devuelve \verb|False| si no hay clientes conectados, \verb|True| caso contrario.
+    
+    \item[-] \verb|publish_from(<cliente *, mensaje*>)| 
+    
+    Publica un cliente a los demás clientes mediante el servidor.
+    
+    \item[-] \verb|publish(<mensaje*>)|
+    
+    Publica el servidor a todos los clientes
+
+    \item[-] \verb|connect(<cliente *, string>)| 
+    
+    Conecta un cliente al servidor
+    
+    \item[-] \verb|disconnect(<cliente *>)|  
+    
+    Desconecta un cliente del servidor.
+    
+    \item[-] \verb|broadcast_message()| 
+    
+    La función que publica los mensajes a todos los clientes.
+\end{itemize}
+
+
+
+\subsection{Ejemplos}
+
+
+\end{document}

@@ -16,6 +16,17 @@ Programación Orientada a Objetos\\ Instituto Balseiro\\}
 
 En este trabajo se basó en la implementación del protocolo de MQTT utilizando los temas de la materia. 
 
+\begin{itemize}
+    \item topic
+    \item mensaje
+    \item cliente
+    \item broker
+\end{itemize}
+
+
+
+
+
 
 \subsection{Librería \texttt{mqtt.hpp}}
 
@@ -38,7 +49,7 @@ Esta  librería están almacenadas las variables reservadas para el protocolo, d
 
     Un cliente puede estar conectado a un solo server ya que al conectarse/desconectarse la variable \verb|mqtt_client::Connected| cambia \verb|mqtt::CONNECTED| / \verb|mqtt::DISCONNECTED|. El estado del cliente se obtiene mediante la función \verb|mqtt_client::isConnected()|.
 
-    Un cliente puede estar suscrito a varios topics al mismo tiempo, la función \verb|mqtt_client::client::subscribe(<string>)|  agrega un nuevo topic a una lista miembro de la clase \verb|mqtt_client::client|, la función \verb|mqtt_client::client::get_topic()| devuelve dicha lista.
+    Un cliente puede estar suscrito a varios topics al mismo tiempo, la función \verb|mqtt_client::client::subscribe(<string>)|  agrega un nuevo topic a una lista miembro de la clase \verb|mqtt_client::client|, la función \verb|mqtt_client::client::get_topic()| devuelve dicha lista y con la función \verb|mqtt_client::client::unsubscribe(<string>)|  podemos desuscribir al cliente de algún topic
 
     El cliente solo puede estar conectado a un servidor
     al mismo tiempo. Tiene la opción de hacer que sus mensajes siempre vayan por defecto, al inicio de la cola de mensajes con  \verb|mqtt_client::set_Priority(mqtt::HIGH)|.

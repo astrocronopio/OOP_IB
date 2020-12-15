@@ -41,16 +41,16 @@ class MQTT_ERR_MESS: public error
     { return "\nNadie esta suscrito al topic.\n";  }
 };
 
-class MQTT_ERR_CONNACK: public error
-{ 
-    virtual const char* what() const throw() 
-    { return "\nError de conexión: El broker no responde.\n";  }
-};
+// class MQTT_ERR_CONNACK: public error
+// { 
+//     virtual const char* what() const throw() 
+//     { return "\nError de conexión: El broker no responde.\n";  }
+// };
 
 class MQTT_ERR_QOS: public error
 { 
     virtual const char* what() const throw() 
-    { return "\nQOS desconocido.\n";  }
+    { return "\nPrioridad desconocido.\n";  }
 };
 
 }

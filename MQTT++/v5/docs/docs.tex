@@ -14,19 +14,14 @@ Programación Orientada a Objetos\\ Instituto Balseiro\\}
 
 \section{MQTT simplificado en \texttt{C++}}
 
-En este trabajo se basó en la implementación del protocolo de MQTT utilizando los temas de la materia. 
+    En este trabajo se basó en la implementación simplificada del protocolo de MQTT utilizando los temas de la materia. Las siguientes palabras son parte de la nomenclatura de la implementación del protocolo:
 
-\begin{itemize}
-    \item topic
-    \item mensaje
-    \item cliente
-    \item broker
-\end{itemize}
-
-
-
-
-
+    \begin{itemize}
+        \item Tópico (topic): Es un tema en el cual se publican mensajes, por ejemplo: en el tópico \verb|casa/cocina/luces/| pueden publicarse mensajes de apagado/encendido de las luces suscritas al tópico.
+        \item Cliente: El cliente se puede  suscribir a varios tópicos y publicar mensajes en los mismos.
+        \item Mensaje: El mismo se publica en un tópico y el broker se encarga de mandar el mensaje a los clientes suscritos al tópico en cuestión.
+        \item Broker: se encarga de mandar los mensajes entre los clientes.
+    \end{itemize}
 
 \subsection{Librería \texttt{mqtt.hpp}}
 
@@ -34,22 +29,92 @@ Esta  librería están almacenadas las variables reservadas para el protocolo, d
 
 \subsection{Librería \texttt{mqtt\_errors.hpp}}
 
+Esta librería está en el \texttt{namespace mqtt\_errors} y contiene los posibles errores que puede aparecer en el algoritmo. 
+
+\subsubsection{Clase \texttt{error}}
+
+Esta clase es  hija de \verb|std::runtime\_error| y con las misma se implementaron el resto de las clases de error, listadas a continuación:
+
+\begin{itemize}
+    \item Clase \verb|MQTT_ERR_CONN|:
+        Cliente no disponible.
+    
+    \item Clase \verb|MQTT_ERR_DEQUE|:
+        Cola de mensajes llena.
+    
+    \item Clase \verb|MQTT_ERR_DEQUE_EMPTY| :
+        Cola de mensajes vacía.
+    
+    \item Clase \verb|MQTT\_ERR\_MESS|:
+        Nadie está suscrito al topic.
+    
+    \item Clase \verb|MQTT\_ERR\_QOS|    :
+        Prioridad desconocida.
+    
+\end{itemize}
+
+
 \subsection{Librería \texttt{mqtt\_message.hpp}}
+
+Implementado dentro del \texttt{namespace mqtt\_message} están  implementadas la función \verb|topic_match_sub| la clase \texttt{mqtt\_message::message}.
+
+\subsubsection{Función \texttt{topic\_match\_sub}}
+
+Está función recibe un string y una lista de strings, y compara si el string es igual o está contenido dentro de alguno de los strings de la lista, devuelve \verb|true| si encuentra una coincidencia o \verb|false| en caso contrario.
+
+La función acepta los argumentos de la siguiente forma:
+\verb|topic_match_sub(<string,forward_list<string>>)|
+
+\subsubsection{Clase \texttt{mqtt\_message::message}}
+
+Cada mensaje tiene un tópico y un \emph{payload}, donde el tópico es el tema del mensaje y el payload es el mensaje en sí: por ejemplo un mensaje puede publicarse en el tópico \verb|/casa/luces/| con el payload de \verb|"ON"| para encenderse.
+
+También tiene un tag de prioridad, que dice decide cuando pronto deben ser publicados: la prioridad alta indica que deben ser publicados inmediatamente mientras que la prioridad normal anexa el mensaje al final de la cola de espera.
+
+El mensaje también tiene la opción de retención, si el mensajes debe ser retenido con \verb|retain=true|, si el mensajes no es recibido por nadie se mantiene en la cola hasta que existe algún cliente que los escuche.
+
+Los métodos de esta clase son los siguientes:
+
+\begin{itemize}
+   \item[-] \verb|message(<string mensaje="",|
+    \verb|         string topic="/",|
+    \verb|         bool retain=false,|
+    \verb|         short priority=mqtt::NORMAL)|
+
+    Esta es la función que instancia una variable \verb|message|. Al inicializar el mensajes se puede inicializar o no los atributos del mismo.
+
+    \item[-] \verb|set_payload(<string>)| y \verb|get_topic()|
+    
+    Se puede definir y obtener el payload del mensaje.
+
+    \item[-] \verb|set_topic(<string>)| y \verb|get_payload()|
+
+    Se puede definir y obtener el tópico del mensaje.
+
+    \item[-] \verb|is_retain()|
+    
+    Esta función devuelve \verb|true| si el mensaje  debe ser retenido, \verb|false| caso contrario.
+
+    \item[-] \verb|set_Priority(<short>)| y \verb|get_Priority()|
+    
+    Se puede definir y obtener la prioridad del mensaje.
+\end{itemize}
+
 
 \subsection{Librería \texttt{mqtt\_client.hpp}}
 
     En esta librería están implementadas las clases utilizada para instanciar objetos que se comporten con un cliente. La misma está dentro del \texttt{namespace mqtt\_client}.
 
     \subsubsection{Clase \texttt{mqtt\_client::client\_virtual}}
-    En esta clase esta implementada de tal forma que la misma y sus hijos no puedan copiarse. También se declaran funciones virtuales puras para que luego van a ser implementadas en las clases hijas.
+    En esta clase está  implementada de tal forma que la misma y sus hijos no puedan copiarse. También se declaran funciones virtuales puras para que luego van a ser implementadas en las clases hijas.
 
     \subsubsection{Clase \texttt{mqtt\_client::client}}
 
-    Esta clase es heredada de la clase \verb|mqtt_client::client_virtual|. Se asigna un ID al azar, usando \verb|mqtt_client::get_id()| y \verb|mqtt_client::set_id(<unsigned int>)|  cuando se conecta al broker que transmite los mensajes
+    Esta clase es heredada de la clase \verb|client_virtual|. Se asigna un ID al azar, usando \verb|client::get_id()| y \verb|client::set_id(<unsigned int>)|  cuando se conecta al broker que transmite los mensajes
 
-    Un cliente puede estar conectado a un solo server ya que al conectarse/desconectarse la variable \verb|mqtt_client::Connected| cambia \verb|mqtt::CONNECTED| / \verb|mqtt::DISCONNECTED|. El estado del cliente se obtiene mediante la función \verb|mqtt_client::isConnected()|.
+    Un cliente puede estar conectado a un solo server ya que al conectarse/desconectarse la variable \verb|mqtt_client::Connected| cambia \verb|mqtt::CONNECTED| / \verb|mqtt::DISCONNECTED|. El estado del cliente se obtiene mediante la función \verb|client::isConnected()|.
 
-    Un cliente puede estar suscrito a varios topics al mismo tiempo, la función \verb|mqtt_client::client::subscribe(<string>)|  agrega un nuevo topic a una lista miembro de la clase \verb|mqtt_client::client|, la función \verb|mqtt_client::client::get_topic()| devuelve dicha lista y con la función \verb|mqtt_client::client::unsubscribe(<string>)|  podemos desuscribir al cliente de algún topic
+    Un cliente puede estar suscrito a varios topics al mismo tiempo, la función \verb|client::subscribe(<string>)|  agrega un nuevo topic a una lista miembro de la clase \verb|client|, la función \verb|client::get_topic()| devuelve dicha lista y con la función \verb|client::unsubscribe(<string>)|  podemos desuscribir al cliente de algún topic
 
     El cliente solo puede estar conectado a un servidor
     al mismo tiempo. Tiene la opción de hacer que sus mensajes siempre vayan por defecto, al inicio de la cola de mensajes con  \verb|mqtt_client::set_Priority(mqtt::HIGH)|.
@@ -59,12 +124,83 @@ Esta  librería están almacenadas las variables reservadas para el protocolo, d
 
 \subsection{Librería \texttt{mqtt\_server.hpp}}
 
+La librería implementa una cola de mensajes con control de acceso, la misma está dentro del \texttt{namespace mqtt\_server}
+\subsubsection{Estructura \texttt{mqtt\_server::publisher}}
+
+Esta es una estructura que contiene de mensaje y la dirección del cliente que publicó el mensaje.
+
+\subsubsection{Clase \texttt{mqtt\_server::server}}
+
+La clase tiene estos tres atributos para el control de acceso a la doble cola \verb|deque| del tipo \verb|publisher| \verb|std::deque< publisher > message_deque|:
+
+\begin{itemize}
+    \item \verb|broadcasting_condition| 
+    \item \verb|server_thread|
+    \item \verb|server_mutex|
+\end{itemize}
+Los mismos son \verb|protected| para poder acceder a ellos mediante las clases  heredadas como variables privadas. El \texttt{copy construct} y el \texttt{move construct} no son accesibles para no mover ni copiar el servidor.
+
+Podemos inicializar el servidor con una variable \verb|unsigned int| de la siguiente manera \verb|server(unsigned int i)|, para definir la cantidad máxima de mensajes en la cola, por defecto la máxima cantidad de mensajes es 10.
+
+\begin{itemize}
+    \item[-] \verb|set_timeout(<chrono::milliseconds>)|
+    
+    Esta función modifica el tiempo en el que esta prendido el servidor, este valor tiene un mínimo de 1 milisegundo.
+
+    \item[-] \verb|set_interval(<chrono::milliseconds>|
+    
+    Esta función modifica el tiempo en el se transmiten dos mensajes consecutivos, el valor predeterminado es de 100 milisegundos entre mensajes.
+    
+    \item[-] publisher \verb|pop_message|
+    
+    Esta función obtiene el primer mensaje en espera de la cola.
+
+    \item[-] publisher \verb|get_message|
+    
+    Esta función obtiene el primer mensaje en espera de la cola, también verifica que la cola no este vacía, si lo está devuelve \verb|nullptr|.
+    
+    \item[-] \verb|append_message_from(<void *, mensaje *>)|
+    
+    Esta función agrega el mensaje de un cliente a la cola de mensajes, teniendo en cuenta la prioridad del mensaje. En la implementación se utiliza un lock en el mutex del servidor para controlar el acceso a la cola de mensajes,  de esta forma evitar conflicto con la función \verb|pop_message|.
+
+    Para evitar un conflicto con un \emph{include} recursivo, se utiliza un puntero del tipo \verb|void *| para referenciar al cliente.
+
+    \begin{itemize}
+        \item \verb|append_message(<mensaje *>)|
+    
+        Es un mensaje para todos los clientes desde el servidor, entonces el cliente es \verb|nullptr|
+    \end{itemize}
+    
+    \item[-] \verb|broadcast_message()|
+    Esta función es virtual pura en esta clase, se implementa en la clase hija \verb|broker|.  La función que publica los mensajes a todos los clientes.
+
+    \item[-] \verb|start_broadcasting()|
+    Esta función tiene en cuenta si el broker va a mandar mensajes durante un rango de tiempo  definido o constantemente hasta terminar el programa. Por defecto, el envío de mensajes se hace por tiempo indefinido.
+    \begin{itemize}
+        \item \verb|constant_broadcasting()|: 
+        Verifica que se haya modificado el valor predeterminado nulo de la variable \verb|server_timeout|, si no fue modificado, el servidor hacer un broadcasting constante.
+
+        \item \verb|timeout_broadcasting()|
+        
+        Caso contrario, se realiza el broadcasting durante el tiempo determinado
+    \end{itemize}
+    
+    \item[-] \verb|running_thread()|
+    
+    Inicializa el thread del servidor para correr en paralelo con el thread padre. Esta función  se ejecuta cuando se ejecuta la función \verb|start_broadcasting|.
+
+    \item[-] \verb|stop_broadcasting|
+    
+    Para la transmisión de mensajes y termina el thread del servidor.
+
+\end{itemize}
+
 \subsection{Librería \texttt{mqtt\_broker.hpp}}
 
-La librería esta con el \texttt{namespace mqtt\_broker}
+La librería está con el \texttt{namespace mqtt\_broker} y se basa en el la librería \texttt{mqtt\_server.hpp}.
+
 \subsubsection{Clase \texttt{mqtt\_broker}}
-Esta clase es una clase hija de \verb|mqtt\_server::server|
-Como atributos la clase tiene una lista con las direcciones de los clientes conectados al broker, un generador de IDs, además de un \verb|mutex| y un \verb|condition_variable| para manejar la lista de clientes y la cola de mensajes.
+Esta clase es una clase hija de \verb|mqtt\_server::server|, como atributos la clase tiene una lista con las direcciones de los clientes conectados al broker, un generador de IDs, además de un \verb|mutex| y un \verb|condition_variable| para manejar la lista de clientes, además del \verb|mutex| y \verb|condition_variable| para la cola de mensajes heredada  de la clase padre.
 
 Los métodos de esta clase incluyen a:
 
@@ -74,28 +210,38 @@ Los métodos de esta clase incluyen a:
     
     \item[-] \verb|publish_from(<cliente *, mensaje*>)| 
     
-    Publica un cliente a los demás clientes mediante el servidor.
+    Publica un mensaje proveniente de cliente a los demás clientes mediante el servidor. El mismo usa un lock en el mutex del servidor para modificar a cola de mensajes, y evitar un conflicto con la función \verb|broadcast_message()|.
     
-    \item[-] \verb|publish(<mensaje*>)|
+    \begin{itemize}
+        \item \verb|publish(<mensaje*>)|
     
-    Publica el servidor a todos los clientes
+        Publica un mensaje del servidor a todos los clientes
+    \end{itemize}
+
 
     \item[-] \verb|connect(<cliente *, string>)| 
     
-    Conecta un cliente al servidor
+    Conecta un cliente al servidor.
     
     \item[-] \verb|disconnect(<cliente *>)|  
     
-    Desconecta un cliente del servidor.
+    Desconecta un cliente del servidor. El mismo usa un lock en el mutex de la lista de clientes para verificar que la  cola de mensajes está vacía para desconectar a un cliente.
     
     \item[-] \verb|broadcast_message()| 
     
-    La función que publica los mensajes a todos los clientes.
+    La función que publica los mensajes a todos los clientes. El mismo usa un lock en el mutex del servidor para modificar a cola de mensajes, y evitar un conflicto con la función \verb|publish_from| y \verb|publish|.
 \end{itemize}
+
 
 
 
 \subsection{Ejemplos}
 
+\subsubsection{\textit{ejemplo\_wikipedia.cpp}}
 
+En este ejemplo se implementa la imagen de wikipedia explicando el protocolo MQTT. 
+
+\subsubsection{\textit{ejemplo\_QoS.cpp}}
+
+Se implementa un servidor con mensajes de distintas prioridades.
 \end{document}

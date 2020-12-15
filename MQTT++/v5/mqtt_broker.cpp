@@ -11,12 +11,15 @@ using namespace std::chrono;
 namespace mqtt_broker
 {
     void broker::publish(mqtt_message::message* mess)
-    {
+    {   
         append_message(mess);
     }
 
     void broker::publish_from(mqtt_client::client * cli, mqtt_message::message* mess)
-    {   
+    {       
+        if (cli->get_Priority()==mqtt::HIGH)
+            mess->set_Priority(mqtt::HIGH);
+
         append_message_from(cli, mess);
     }
 
@@ -55,7 +58,12 @@ namespace mqtt_broker
 
                    client_reply = i->reply(pub_mess.mess);
                    if (client_reply!=nullptr) 
-                        publish_from(i, client_reply);
+                        {   
+                            lock_broadcasting.unlock();
+                            publish_from(i, client_reply);
+
+                        }
+
                 }
         }
 

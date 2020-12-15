@@ -48,7 +48,7 @@ private:
     bool published=false;
     bool retain=false;
     bool _published=false;
-    bool _error= mqtt::MQTT_MESS_N0_SUCCESS;
+    // bool _error= mqtt::MQTT_MESS_N0_SUCCESS;
 
 public:
     //Const default
@@ -56,7 +56,7 @@ public:
 
     //Const cambiando cosas
     message(std::string mes="", 
-            std::string topic="",
+            std::string topic="/",
             bool retain_=false ,
             short priority=mqtt::NORMAL
             )

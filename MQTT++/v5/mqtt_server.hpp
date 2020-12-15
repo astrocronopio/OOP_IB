@@ -68,7 +68,7 @@ public:
     
     server():server_thread(){};
     server(unsigned int i): deque_max(i){};
-    server(std::chrono::minutes &rel_time): 
+    server(milliseconds &rel_time): 
               server_timeout(rel_time){};
     ~server(){};
 

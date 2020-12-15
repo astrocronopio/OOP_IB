@@ -19,7 +19,7 @@ namespace mqtt_server{
         server_interval=interval_ms;
     }
 
-    void server::append_message_from(void * cli, mqtt_message::message* mess)
+    void server::append_message_from(void * cli_, mqtt_message::message* mess)
     {   
         std::unique_lock<std::mutex> lock_broadcasting(server_mutex);
 
@@ -29,11 +29,11 @@ namespace mqtt_server{
 
         else
         {
-            if (mess->get_QoS()==mqtt::NORMAL)
-                message_deque.push_back({cli, mess});
+            if (mess->get_Priority()==mqtt::NORMAL)
+                message_deque.push_back({cli_, mess});
             
-            else if (mess->get_QoS()==mqtt::HIGH)
-                message_deque.push_front({cli, mess});
+            else if (mess->get_Priority()==mqtt::HIGH)
+                message_deque.push_front({cli_, mess});
             
             else
                 throw mqtt_errors::MQTT_ERR_QOS();

@@ -1,12 +1,19 @@
-\BOOKMARK [0][-]{section*.1}{MQTT++}{}% 1
+\BOOKMARK [0][-]{section*.1}{MQTT++ v5}{}% 1
 \BOOKMARK [1][-]{section*.2}{MQTT simplificado en C++}{section*.1}% 2
 \BOOKMARK [2][-]{section*.3}{Librer\355a mqtt.hpp}{section*.2}% 3
 \BOOKMARK [2][-]{section*.4}{Librer\355a mqtt\137errors.hpp}{section*.2}% 4
-\BOOKMARK [2][-]{section*.5}{Librer\355a mqtt\137message.hpp}{section*.2}% 5
-\BOOKMARK [2][-]{section*.6}{Librer\355a mqtt\137client.hpp}{section*.2}% 6
-\BOOKMARK [3][-]{section*.7}{Clase mqtt\137client::client\137virtual}{section*.6}% 7
-\BOOKMARK [3][-]{section*.8}{Clase mqtt\137client::client}{section*.6}% 8
-\BOOKMARK [2][-]{section*.9}{Librer\355a mqtt\137server.hpp}{section*.2}% 9
-\BOOKMARK [2][-]{section*.10}{Librer\355a mqtt\137broker.hpp}{section*.2}% 10
-\BOOKMARK [3][-]{section*.11}{Clase mqtt\137broker}{section*.10}% 11
-\BOOKMARK [2][-]{section*.12}{Ejemplos}{section*.2}% 12
+\BOOKMARK [3][-]{section*.5}{Clase error}{section*.4}% 5
+\BOOKMARK [2][-]{section*.6}{Librer\355a mqtt\137message.hpp}{section*.2}% 6
+\BOOKMARK [3][-]{section*.7}{Funci\363n topic\137match\137sub}{section*.6}% 7
+\BOOKMARK [3][-]{section*.8}{Clase mqtt\137message::message}{section*.6}% 8
+\BOOKMARK [2][-]{section*.9}{Librer\355a mqtt\137client.hpp}{section*.2}% 9
+\BOOKMARK [3][-]{section*.10}{Clase mqtt\137client::client\137virtual}{section*.9}% 10
+\BOOKMARK [3][-]{section*.11}{Clase mqtt\137client::client}{section*.9}% 11
+\BOOKMARK [2][-]{section*.12}{Librer\355a mqtt\137server.hpp}{section*.2}% 12
+\BOOKMARK [3][-]{section*.13}{Estructura mqtt\137server::publisher}{section*.12}% 13
+\BOOKMARK [3][-]{section*.14}{Clase mqtt\137server::server}{section*.12}% 14
+\BOOKMARK [2][-]{section*.15}{Librer\355a mqtt\137broker.hpp}{section*.2}% 15
+\BOOKMARK [3][-]{section*.16}{Clase mqtt\137broker}{section*.15}% 16
+\BOOKMARK [2][-]{section*.17}{Ejemplos}{section*.2}% 17
+\BOOKMARK [3][-]{section*.18}{ejemplo\137wikipedia.cpp}{section*.17}% 18
+\BOOKMARK [3][-]{section*.19}{ejemplo\137QoS.cpp}{section*.17}% 19

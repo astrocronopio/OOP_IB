@@ -68,8 +68,10 @@ public:
     unsigned int get_id() const {return id;};
 
     void set_Priority(short priority){default_Priority=priority;};
+    short get_Priority() const{return default_Priority;};
 
     void subscribe(std::string topic) {client_topic.push_front(topic);};
+    void unsubscribe(std::string topic){client_topic.remove(topic);};
     
     std::forward_list<std::string> get_topic() const{ return client_topic;};
 
